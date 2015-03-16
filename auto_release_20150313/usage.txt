@@ -1,0 +1,32 @@
+
+###
+
+/home/holmes/My/py/py/android  这个是打包根目录
+
+release 里面打好的包
+
+
+###
+
+config.json 可以配置打哪个包。从0开始的数组
+
+###
+
+python auto_release.py -f wp8_channel.txt
+
+-f 后跟渠道文件
+
+###
+
+python auto_release.py -p
+
+查看当前的包是哪个
+
+###
+
+python auto_release.py 1000
+打一个1000的渠道
+
+python auto_release.py 2000 2008
+打从2000到2008的范围内的渠道
+

@@ -1,0 +1,121 @@
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+# Author: Albert<yangsong@2bapm.com>
+#         http://2bapm.com
+# Date: 2015-02-10 17:11
+# Created on
+
+import requests
+from BeautifulSoup import BeautifulSoup
+import re
+# import sys
+
+
+def requestsPrepare():
+
+    """proxies = {
+        'http': 'http://127.0.0.1:8087',
+        'https': 'http://127.0.0.1:8087',
+    }"""
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:27.0) Gecko/20100101 Firefox/27.0',
+    }
+
+    s = requests.Session()
+    # s.proxies = proxies
+    s.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
+    s.mount('http://', requests.adapters.HTTPAdapter(max_retries=5))
+
+    return s
+
+"""def getData():
+    if len(sys.argv) == 3:
+        login_email = sys.argv[1]
+        login_password = sys.argv[2]
+        return (login_email, login_password)
+    else:
+        print "Usage:"
+        print "python doubanLogin.py login_email login_password"
+        sys.exit()"""
+
+
+def login(login_url, login_email, login_password):
+
+    s = requestsPrepare()
+
+    data = {'form_email': login_email, 'form_password': login_password, 'source': 'index_nav'}
+
+    res = s.post(login_url, data=data)
+
+    if res.url == login_url:
+        html = res.text
+        imgurl = re.search('<img id="captcha_img" src="(.+?)" alt', html)
+
+        if imgurl:
+            url = imgurl.group(1)
+            with open('~/Pictures/douban_validation.jpg', 'wb') as f:
+                f.write(s.get(url).content)
+            captcha = re.search('<input type="hidden" name="captcha-id" value="(.+?)"/>'  , html)
+            captcha = captcha.group(1)
+
+            if captcha:
+                vcode = raw_input('请您输入图片上的验证码: \n.Help: 图片位置: ~/Pictures/douban_validation.jpg')
+                data['capcha-solution'] = vcode
+                data['capcha-id'] = captcha
+                data['user_login'] = '登录'
+                res = s.post(login_url, data=data)
+
+                if res.url == 'http://www.douban.com':
+                    print "login successly with the validation code"
+                    return s
+                else:
+                    return s
+                    print "Something wrong! Try again later, please"
+            else:
+                return s
+                print "Failed to parse the captcha image id for validation! Please try again later."
+        else:
+            return s
+            print "Failed to parse the captcha image url to download the image! Please try again later."
+
+    elif res.url == 'http://www.douban.com':
+        print "login successly without validation code"
+        return s
+    else:
+        return s
+        print "Something wrong! Try again later, please"
+
+
+
+login('https://www.douban.com/accounts/login', '3414506@gmail.com', 'yangsong')
+shyparams = {"start": "0"}
+shy = requests.get("http://www.douban.com/group/haixiuzu/discussion", params=shyparams)
+shysoup = BeautifulSoup(shy.text)
+"""
+print shysoup.findAll('tr', attrs={'class': ''})[0]
+print shysoup.findAll('tr', attrs={'class': ''})[0].a.get("title")
+print shysoup.findAll('tr', attrs={'class': ''})[0].a.get("href")
+print shysoup.findAll('tr', attrs={'class': ''})[0].findAll('td', attrs={'nowrap': 'nowrap'})[0].a.string
+print shysoup.findAll('tr', attrs={'class': ''})[0].findAll('td', attrs={'nowrap': 'nowrap'})[0].a.get('href')
+shyimage = requests.get(shysoup.findAll('tr', attrs={'class': ''})[0].a.get("href"))
+shyimagesoup = BeautifulSoup(shyimage.text)
+print shyimagesoup
+"""
+shyitems = []
+a = 0
+while a < 23:
+    shyimage = requests.get(shysoup.findAll('tr', attrs={'class': ''})[a].a.get("href"))
+    shyimagesoup = BeautifulSoup(shyimage.text)
+
+    shyitems.append({'title': shysoup.findAll('tr', attrs={'class': ''})[a].a.get("title"), \
+                   'titlehref': shysoup.findAll('tr', attrs={'class': ''})[a].a.get("href"), \
+                   'user': shysoup.findAll('tr', attrs={'class': ''})[a].findAll('td', attrs={'nowrap': 'nowrap'})[0].a.string, \
+                   'userhref': shysoup.findAll('tr', attrs={'class': ''})[a].findAll('td', attrs={'nowrap': 'nowrap'})[0].a.get('href'), \
+                    'shypic': shyimagesoup.findAll('img', attrs={'alt': '', 'class': ''})})
+
+    print shyimagesoup.findAll('div', attrs={'class': 'topic-figure cc'})
+    print shysoup.findAll('tr', attrs={'class': ''})[a].a.get("href")
+    a += 1
+
+

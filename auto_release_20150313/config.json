@@ -1,0 +1,24 @@
+{
+    "projects": [
+        "Romaster",
+        "AppCool",
+        "Superclean",
+        "Superuser2",
+        "RomasterSu",
+        "iRoot2",
+        "RomasterSu_split",
+        "Superclean_play",
+        "RomServer",
+        "WP8",
+        "Lexun",
+        "WP8-PlayFree",
+        "RomasterSu360",
+        "Launcher8"
+    ],
+
+    "paths":{
+        "Launcher8":"/home/holmes/android/android/mgyun/Launcher8/branches/ModuleLauncher"
+    },
+
+    "build": 13
+}
